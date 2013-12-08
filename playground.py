@@ -9,7 +9,7 @@ from itertools import chain
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.rl.environments.fitnessevaluator import FitnessEvaluator
 from pybrain.optimization.hillclimber import HillClimber
-from pybrain.optimization.distributionbased.cmaes import CMAES
+from pybrain.optimization import FEM, ExactNES, GA
 
 class Action(object):
     LEFT = (-1, 0)
@@ -96,7 +96,8 @@ class NeuralBee(Bee):
                 
                 visible_objects.append(meadow.meadow_objects[x][y])
        
-        input_params = map(NeuralBee._encode_meadow_object, visible_objects)
+        input_params = list(chain.from_iterable(map(NeuralBee._encode_meadow_object, visible_objects)))
+        input_params.append(self.pollen_gathered / float(self.max_capacity))
         output = network.activate(input_params)
         maximum_output_index = list(output).index(max(output))
         
@@ -104,7 +105,7 @@ class NeuralBee(Bee):
     
     @staticmethod
     def _encode_meadow_object(meadow_object):
-        encoding = {Grass: 0, Hive: 1, Flower: 2, Obstacle: 3}
+        encoding = {Grass: [0, 0, 0], Hive: [1, 0, 0], Flower: [0, 1, 0], Obstacle: [0, 0, 1]}
         return encoding[type(meadow_object)]
             
 class Meadow(WorldObject):
@@ -173,23 +174,30 @@ class RandomMeadow(Meadow):
         shuffle(all_objects)
         return [all_objects[i * width : (i + 1) * width] for i in range(0, height)]
 
-network = buildNetwork(9, 3, 4)      
+network = buildNetwork(28, 10, 4)      
 meadow = RandomMeadow(10, 10, 10, 10, 1)
 
 # class ManyEpisodesFitness(FitnessEvaluator):
 #     def __init__(self, meadow):
 #         self.meadow = meadow
+
+
         
 def f(network):
-    bees = [NeuralBee(5, network) for _ in range(0, 3)]
+    bees = [NeuralBee(5, network)]
     meadow.set_bees(bees)
     meadow.reset_state()
+#     last_positions = [bee.position for bee in bees]
+#     penalty_for_standing_still = 0
     for _ in range(1, 300):
         meadow.do_episode()
+#         current_positions = [bee.position for bee in bees]
+#         penalty_for_standing_still += sum([1 if a == b else 0 for a, b in zip(current_positions, last_positions)])
+#         last_positions = current_positions
         
-    return sum([hive.pollen for hive in meadow.hives])
+    return sum([hive.pollen for hive in meadow.hives])**2 + sum([bee.pollen_gathered for bee in bees]) #- penalty_for_standing_still
       
-best = CMAES(f, network, maxEvaluations = 10000).learn()
+best = GA(f, network, maxEvaluations=500000).learn()
 
 bees = [NeuralBee(5, best) for _ in range(0, 3)]
 meadow.set_bees(bees)
