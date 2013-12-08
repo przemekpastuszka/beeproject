@@ -199,7 +199,7 @@ def f(network):
       
 best = GA(f, network, maxEvaluations=500000).learn()
 
-bees = [NeuralBee(5, best) for _ in range(0, 3)]
+bees = [NeuralBee(5, best)]
 meadow.set_bees(bees)
 meadow.reset_state()
 for _ in range(1, 300):
