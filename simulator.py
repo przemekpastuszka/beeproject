@@ -1,11 +1,10 @@
 from time import sleep
 from pybrain.tools.shortcuts import buildNetwork
-from pybrain.optimization import GA
+from genetic import genetic
 
 from bees import NeuralBee
 from meadow import MeadowFactory
 import settings
-
 
 class Fitness(object):
     def __init__(self, meadow_factory, bees_number, episodes, directions,
@@ -29,11 +28,13 @@ class Fitness(object):
 
 def create_brain(network_params, fitness, evaluations):
     network = buildNetwork(*network_params)
-    ga = GA(fitness, network)
-    ga.maxEvaluations = evaluations
-    ga.populationSize = 50
-#     ga.elitism = True
-    return ga.learn()[0]
+    
+    def get_network_with(args):
+        network._setParameters(args)
+        return network
+    
+    best_params = genetic(lambda x: fitness.__call__(get_network_with(x)), len(network.params))
+    return get_network_with(best_params)
 
 
 if __name__ == "__main__":

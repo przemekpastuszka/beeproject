@@ -15,7 +15,7 @@ NETWORK_PARAMS = NetworkParams(inputs=27,
                                hidden_neurons=10,
                                outputs=4)
 
-BEES_NUMBER = 5
+BEES_NUMBER = 1
 
 NETWORK_EVALUATIONS = 5
 
