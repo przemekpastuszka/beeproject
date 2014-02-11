@@ -1,4 +1,5 @@
 from itertools import chain
+import random
 from world_objects import Flower, Hive, Obstacle, Grass
 
 
@@ -66,7 +67,7 @@ class NeuralBee(Bee):
         output = self.network.activate(input_params)
         maximum_output_index = list(output).index(max(output))
 
-        return directions[maximum_output_index]
+        return directions[maximum_output_index] if random.random() < 0.7 else random.choice(directions)
 
     @staticmethod
     def _encode_meadow_object(meadow_object):
