@@ -48,10 +48,10 @@ if __name__ == "__main__":
                       settings.BEE_MAX_CAPACITY)
     brain = create_brain(settings.NETWORK_PARAMS, fitness,
                          settings.NETWORK_EVALUATIONS)
-     meadow = meadow_factory.get_meadow()
-     bees = [NeuralBee(settings.BEE_MAX_CAPACITY, brain, meadow.hive_positions)]
-     meadow.set_bees(bees)
-     for _ in range(settings.EPISODES_PER_SIMULATION):
-         print meadow
-         meadow.do_episode(settings.DIRECTIONS)
-         sleep(0.1)
+    meadow = meadow_factory.get_meadow()
+    bees = [NeuralBee(settings.BEE_MAX_CAPACITY, brain, meadow.hive_positions)]
+    meadow.set_bees(bees)
+    for _ in range(settings.EPISODES_PER_SIMULATION):
+        print meadow
+        meadow.do_episode(settings.DIRECTIONS)
+        sleep(0.1)
