@@ -9,7 +9,7 @@ class Bee(object):
         self.pollen_gathered = 0
 
     def choose_action(self, meadow, directions):
-        pass
+        raise NotImplemented
 
     def interact_with(self, meadow_object):
         """

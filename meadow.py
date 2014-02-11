@@ -22,10 +22,7 @@ class RandomMeadow(object):
                                                     objects_distribution,
                                                     flower_capacity)
         self._add_borders()
-        self.hive_positions = list(self._find_hives_positions())
-        self.hives = []
-        for position in self.hive_positions:
-            self.hives.append(self.meadow_objects[position[0]][position[1]])
+        self.hives, self.hive_positions = self._find_hives()
 
     def do_episode(self, directions):
         """
@@ -49,15 +46,15 @@ class RandomMeadow(object):
             bee.position = choice(self.hive_positions)
         self.bees = bees
 
-    def _find_hives_positions(self):
-        """
-            Iterates over the whole meadow and yields
-            hive's positions
-        """
+    def _find_hives(self):
+        hives = []
+        positions = []
         for x, row in enumerate(self.meadow_objects):
             for y, cell in enumerate(row):
                 if isinstance(cell, Hive):
-                    yield (x, y)
+                    hives.append(cell)
+                    positions.append((x, y))
+        return hives, positions
 
     def _add_borders(self):
         """
