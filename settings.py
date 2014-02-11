@@ -11,7 +11,7 @@ OBJECTS_DISTRIBUTION = ObjectsDistribution(obstacles=10,
                                            flowers=10,
                                            hives=1)
 
-NETWORK_PARAMS = NetworkParams(inputs=28,
+NETWORK_PARAMS = NetworkParams(inputs=27,
                                hidden_neurons=10,
                                outputs=4)
 
@@ -23,4 +23,4 @@ EPISODES_PER_SIMULATION = 300
 
 BEE_MAX_CAPACITY = 5
 
-FLOWER_CAPACITY = 30
+FLOWER_CAPACITY = 10
