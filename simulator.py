@@ -49,7 +49,7 @@ if __name__ == "__main__":
     brain = create_brain(settings.NETWORK_PARAMS, fitness,
                          settings.NETWORK_EVALUATIONS)
     meadow = meadow_factory.get_meadow()
-    bees = [NeuralBee(settings.BEE_MAX_CAPACITY, brain, meadow.hive_positions)]
+    bees = [NeuralBee(settings.BEE_MAX_CAPACITY, brain, meadow.hive_positions) for _ in range(settings.BEES_NUMBER)]
     meadow.set_bees(bees)
     for _ in range(settings.EPISODES_PER_SIMULATION):
         print meadow

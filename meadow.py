@@ -29,7 +29,7 @@ class RandomMeadow(object):
            Triggers bee's single step. For all bees - one by one.
         """
         for bee in self.bees:
-            movement = bee.choose_action(self, directions)
+            movement = bee.choose_action(self, directions, self.bees)
             next_position = (bee.position[0] + movement[0],
                              bee.position[1] + movement[1])
             object_at_next_position =\
