@@ -4,6 +4,9 @@ Created on Feb 12, 2014
 @author: przemek
 '''
 
+from itertools import imap
+import operator
+
 class Network:
     def __init__(self, inputs, hidden, outputs):
         self.inputs = inputs
@@ -13,25 +16,19 @@ class Network:
     def set_params(self, params):
         self.params = params
     
-    def activate(self, input):
-        hidden_layer_value, param_shift = self._calculate_layer(input, self.hidden, 0)
-        output, _ = self._calculate_layer(hidden_layer_value, self.outputs, param_shift)
+    def number_of_params(self):
+        return (self.inputs + 1) * self.hidden + (self.hidden + 1) * self.outputs 
+    
+    def activate(self, inp):
+        param_iterator = iter(self.params)
+        hidden_layer_value = self._calculate_layer(inp, self.hidden, param_iterator)
+        output = self._calculate_layer(hidden_layer_value, self.outputs, param_iterator)
         return output
     
-    def _calculate_layer(self, previous, m, param_shift):
+    def _calculate_layer(self, previous, m, param_iterator):
         previous.append(1)
-        previous_layer_len = len(previous)
         
-        values = []
-        for _ in xrange(m):
-            value = 0
-            for j in xrange(previous_layer_len):
-                value += previous[j] * self.params[param_shift]
-                param_shift += 1
-            values.append(value)
-        
-        return values, param_shift
+        return [self._calculate_neuron(previous, param_iterator) for _ in xrange(m)]
     
-n = Network(2, 2, 1)
-n.set_params([1, 2, 3, 4, 5, 6, 7, 8, 9])
-assert n.activate([10, 11])[0] == 1062 
+    def _calculate_neuron(self, previous_layer, param_iterator):
+        return sum(imap(operator.mul, iter(previous_layer), param_iterator))
