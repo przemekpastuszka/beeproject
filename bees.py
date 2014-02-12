@@ -44,7 +44,7 @@ class NeuralBee(Bee):
         self.hive_position = hive_positions[0]
 
     def choose_action(self, meadow, directions, all_bees):
-        return self._choose_determinant_action(meadow, directions, all_bees) if random.random() < 0.7 else random.choice(directions)
+        return self._choose_determinant_action(meadow, directions, all_bees) if random.random() < 0.8 else random.choice(directions)
         
     def _choose_determinant_action(self, meadow, directions, all_bees):
         if self.pollen_gathered >= self.max_capacity:

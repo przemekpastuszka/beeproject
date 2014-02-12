@@ -7,17 +7,31 @@ Created on 27-12-2013
 from random import shuffle, randrange, sample, random, gauss
 
 def genetic(fitness_function, individual_size):
-    population_size = 10
-    num_of_epochs = 50
+    population_size = 50
+    stagnation_threshold = 5
     population = [list([gauss(0, 1) for _ in range(individual_size)]) for _ in range(0, population_size)]
         
-    population_with_fitness = evaluate_fitness(population, fitness_function)    
-    for _ in xrange(0, num_of_epochs):
+    population_with_fitness = evaluate_fitness(population, fitness_function)
+    last_best_fitness = choose_best(population_with_fitness)[1]
+    stagnation = 0
+    iterations = 0
+    while stagnation < stagnation_threshold:
         parents = choose_parents(population_with_fitness)
         children = breed(parents)
         mutate(children)
         population_with_fitness = merge(population_with_fitness, evaluate_fitness(children, fitness_function))
-    return choose_best(population_with_fitness)[0]
+        
+        current_best_fitness = population_with_fitness[0][1]
+        if current_best_fitness <= last_best_fitness:
+            stagnation += 1
+        else:
+            stagnation= 0    
+            last_best_fitness = current_best_fitness
+        iterations += 1
+    
+    best_individual = choose_best(population_with_fitness)
+    print "Genetic algorithm stopped after ", iterations, " iterations with fitness: ", best_individual[1]        
+    return best_individual[0]
 
 def evaluate_fitness(population, fitness_function):
     return [(individual, fitness_function(individual)) for individual in population]
@@ -61,21 +75,16 @@ def crossover(a, b):
 def mutate(children):
     for child in children:
         for i in range(len(child)):
-            if random() <= 0.1:
+            if random() <= 0.2:
                 child[i] += gauss(0, 0.2)
 
 def merge(parents, children):
     both = parents + children
-    both.sort(key=lambda x: x[1])
+    both.sort(key=lambda x: -x[1])
     return both[:len(parents)]
 
 def choose_best(population):
-    return min(population, key=lambda x: x[1])
-
-def translate(x, d):
-    while x in d and x != d[x]:
-        x = d[x]
-    return x
+    return max(population, key=lambda x: x[1])
     
    
         
