@@ -22,6 +22,7 @@ class RandomMeadow(object):
                                                     objects_distribution,
                                                     flower_capacity)
         self._add_borders()
+        self._add_borders()
         self.hives, self.hive_positions = self._find_hives()
 
     def do_episode(self, directions):
