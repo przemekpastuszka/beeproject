@@ -16,16 +16,19 @@ class Network:
         self.identity = lambda x: x
     
     def set_params(self, params):
+        assert len(params) == self.number_of_params()
+        
         self.params = params
     
     def number_of_params(self):
         return (self.inputs + 1) * self.hidden + (self.hidden + 1) * self.outputs 
     
     def activate(self, inp):
+        assert len(inp) == self.inputs
+        
         param_iterator = iter(self.params)
         hidden_layer_value = self._calculate_layer(inp, self.hidden, param_iterator, tanh)
-        output = self._calculate_layer(hidden_layer_value, self.outputs, param_iterator, self.identity)
-        return output
+        return self._calculate_layer(hidden_layer_value, self.outputs, param_iterator, self.identity)
     
     def _calculate_layer(self, previous, m, param_iterator, activation):
         previous.append(1)

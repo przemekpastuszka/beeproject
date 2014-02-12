@@ -7,7 +7,7 @@ Created on 27-12-2013
 from random import shuffle, randrange, sample, random, gauss
 
 def genetic(fitness_function, individual_size):
-    population_size = 50
+    population_size = 30
     stagnation_threshold = 5
     population = [list([gauss(0, 1) for _ in range(individual_size)]) for _ in range(0, population_size)]
         
@@ -75,7 +75,7 @@ def crossover(a, b):
 def mutate(children):
     for child in children:
         for i in range(len(child)):
-            if random() <= 0.2:
+            if random() <= 1.0/len(child):
                 child[i] += gauss(0, 0.2)
 
 def merge(parents, children):

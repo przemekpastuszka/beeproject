@@ -11,7 +11,7 @@ OBJECTS_DISTRIBUTION = ObjectsDistribution(obstacles=10,
                                            flowers=10,
                                            hives=1)
 
-NETWORK_PARAMS = NetworkParams(inputs=15,
+NETWORK_PARAMS = NetworkParams(inputs=24,
                                hidden_neurons=9,
                                outputs=4)
 
