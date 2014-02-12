@@ -36,7 +36,7 @@ class NeuralBee(Bee):
     """
        Bee acting under control of neural network
     """
-    visibility_radius = 1
+    visibility_radius = 2
 
     def __init__(self, max_capacity, network, hive_positions):
         Bee.__init__(self, max_capacity)
@@ -65,14 +65,14 @@ class NeuralBee(Bee):
                 x = self.position[0] + row_shift
                 y = self.position[1] + column_shift
                 bee = self._find_bee_for_coords(all_bees, x, y)
+                if bee == self:
+                    continue
                 if bee is None:
                     visible_objects.append(meadow.meadow_objects[x][y])
                 else:
                     visible_objects.append(bee)
 
-        input_params = list(chain.from_iterable(
-            map(NeuralBee._encode_meadow_object, visible_objects))
-        )
+        input_params = map(NeuralBee._encode_meadow_object, visible_objects)
         output = self.network.activate(input_params)
         maximum_output_index = output.index(max(output))
 
@@ -95,8 +95,8 @@ class NeuralBee(Bee):
         if (isinstance(meadow_object, Flower) and meadow_object.pollen == 0) or isinstance(meadow_object, Hive):
             meadow_object_type = Grass
         
-        encoding = {Grass: [0, 0, 0],
-                    NeuralBee: [1, 0, 0],
-                    Flower: [0, 1, 0],
-                    Obstacle: [0, 0, 1]}
+        encoding = {Grass: 0,
+                    NeuralBee: -2,
+                    Flower: 1,
+                    Obstacle: -1}
         return encoding[meadow_object_type]
