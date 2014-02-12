@@ -8,7 +8,7 @@ from random import shuffle, randrange, sample, random, gauss
 
 def genetic(fitness_function, individual_size):
     population_size = 10
-    num_of_epochs = 10
+    num_of_epochs = 50
     population = [list([gauss(0, 1) for _ in range(individual_size)]) for _ in range(0, population_size)]
         
     population_with_fitness = evaluate_fitness(population, fitness_function)    

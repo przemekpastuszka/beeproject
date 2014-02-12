@@ -1,5 +1,5 @@
 from time import sleep
-from pybrain.tools.shortcuts import buildNetwork
+from network import Network
 from genetic import genetic
 
 from bees import NeuralBee
@@ -27,17 +27,21 @@ class Fitness(object):
 
 
 def create_brain(network_params, fitness, evaluations):
-    network = buildNetwork(*network_params)
+    network = Network(network_params.inputs, network_params.hidden_neurons, network_params.outputs)
     
     def get_network_with(args):
-        network._setParameters(args)
+        network.set_params(args)
         return network
     
-    best_params = genetic(lambda x: fitness(get_network_with(x)), len(network.params))
+    best_params = genetic(lambda x: fitness(get_network_with(x)), network.number_of_params())
     return get_network_with(best_params)
 
 
 if __name__ == "__main__":
+#     import cProfile, pstats, StringIO
+#     pr = cProfile.Profile()
+#     pr.enable()
+    
     meadow_factory = MeadowFactory(settings.BOARD,
                                    settings.OBJECTS_DISTRIBUTION,
                                    settings.FLOWER_CAPACITY)
@@ -50,6 +54,13 @@ if __name__ == "__main__":
     brain = create_brain(settings.NETWORK_PARAMS, fitness,
                          settings.NETWORK_EVALUATIONS)
     meadow = meadow_factory.get_meadow()
+    
+#     pr.disable()
+#     s = StringIO.StringIO()
+#     sortby = 'cumulative'
+#     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+#     ps.print_stats()
+#     print s.getvalue()
     bees = [NeuralBee(settings.BEE_MAX_CAPACITY, brain, meadow.hive_positions) for _ in range(settings.BEES_NUMBER)]
     meadow.set_bees(bees)
     for _ in range(settings.EPISODES_PER_SIMULATION):

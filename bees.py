@@ -58,9 +58,9 @@ class NeuralBee(Bee):
            Asks neural network for next move
         """
         visible_objects = []
-        for row_shift in range(-self.visibility_radius,
+        for row_shift in xrange(-self.visibility_radius,
                                self.visibility_radius + 1):
-            for column_shift in range(-self.visibility_radius,
+            for column_shift in xrange(-self.visibility_radius,
                                       self.visibility_radius + 1):
                 x = self.position[0] + row_shift
                 y = self.position[1] + column_shift
@@ -74,7 +74,7 @@ class NeuralBee(Bee):
             map(NeuralBee._encode_meadow_object, visible_objects))
         )
         output = self.network.activate(input_params)
-        maximum_output_index = list(output).index(max(output))
+        maximum_output_index = output.index(max(output))
 
         return directions[maximum_output_index]
 
