@@ -27,7 +27,7 @@ class Fitness(object):
 
 
 def create_brain(network_params, fitness, evaluations):
-    network = Network(network_params.inputs, network_params.hidden_neurons, network_params.outputs)
+    network = Network(NeuralBee.network_input_size(), network_params.hidden_neurons, network_params.outputs)
     
     def get_network_with(args):
         network.set_params(args)

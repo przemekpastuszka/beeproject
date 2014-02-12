@@ -8,7 +8,7 @@ class Bee(object):
     def __init__(self, max_capacity):
         self.max_capacity = max_capacity
         self.position = (0, 0)
-        self.pollen_gathered = 0
+        self.pollen_gathered = 0.0
 
     def choose_action(self, meadow, directions, all_bees):
         raise NotImplemented
@@ -37,6 +37,7 @@ class NeuralBee(Bee):
        Bee acting under control of neural network
     """
     visibility_radius = 2
+    state = 1
 
     def __init__(self, max_capacity, network, hive_positions):
         Bee.__init__(self, max_capacity)
@@ -74,18 +75,28 @@ class NeuralBee(Bee):
                 else:
                     visible_objects.append(bee)
 
-        input_params = map(NeuralBee._encode_meadow_object, visible_objects)
+        input_params = list(chain.from_iterable((map(NeuralBee._encode_meadow_object, visible_objects))))
+        input_params.append(self.pollen_gathered / self.max_capacity)
+        
         output = self.network.activate(input_params)
-        maximum_output_index = output.index(max(output))
+        
+        self.state = output[4]
+        
+        directions_indicators = output[:4]
+        direction_index = directions_indicators.index(max(directions_indicators))
 
-        return directions[maximum_output_index]
+        return directions[direction_index]
 
     def _find_bee_for_coords(self, bees, x, y):
         for bee in bees:
             if bee.position == (x, y):
                 return bee
         return None
-
+    
+    @staticmethod
+    def network_input_size():
+        return ((NeuralBee.visibility_radius * 2 + 1) ** 2 - 1) * len(NeuralBee._encode_meadow_object(Grass())) + 1
+    
     @staticmethod
     def _encode_meadow_object(meadow_object):
         """
@@ -93,12 +104,10 @@ class NeuralBee(Bee):
            neural network, independent from representation used to display
            final results
         """
-        meadow_object_type = type(meadow_object)
-        if (isinstance(meadow_object, Flower) and meadow_object.pollen == 0) or isinstance(meadow_object, Hive):
-            meadow_object_type = Grass
         
-        encoding = {Grass: 0,
-                    NeuralBee: -2,
-                    Flower: 1,
-                    Obstacle: -1}
-        return encoding[meadow_object_type]
+        encoders = {Grass: lambda x: [0, 0, 0],
+                    Hive: lambda x: [0, 0, 0],
+                    NeuralBee: lambda x: [x.state, 0, 0],
+                    Flower: lambda x: [0, 0, 0] if x.pollen == 0 else [0, 1, 0],
+                    Obstacle: lambda x: [0, 0, 1]}
+        return encoders[type(meadow_object)](meadow_object)
