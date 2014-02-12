@@ -9,20 +9,20 @@ import settings
 class Fitness(object):
     def __init__(self, meadow_factory, bees_number, episodes, directions,
                  bee_capacity):
-        self.meadow_factory = meadow_factory
         self.bees_number = bees_number
         self.episodes = episodes
         self.directions = directions
         self.bee_capacity = bee_capacity
+        self.meadow = meadow_factory.get_meadow()
 
     def __call__(self, network):
-        meadow = meadow_factory.get_meadow()
+        self.meadow = meadow_factory.get_meadow()
         bees = [NeuralBee(self.bee_capacity,
-                          network, meadow.hive_positions) for _ in range(self.bees_number)]
-        meadow.set_bees(bees)
+                          network, self.meadow.hive_positions) for _ in range(self.bees_number)]
+        self.meadow.set_bees(bees)
         for _ in range(self.episodes):
-            meadow.do_episode(self.directions)
-        return sum([hive.pollen for hive in meadow.hives])**2 +\
+            self.meadow.do_episode(self.directions)
+        return sum([hive.pollen for hive in self.meadow.hives])**2 +\
             sum([bee.pollen_gathered for bee in bees])
 
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
                       settings.BEE_MAX_CAPACITY)
     brain = create_brain(settings.NETWORK_PARAMS, fitness,
                          settings.NETWORK_EVALUATIONS)
-    meadow = meadow_factory.get_meadow()
+    meadow = fitness.meadow
     
 #     pr.disable()
 #     s = StringIO.StringIO()

@@ -61,8 +61,8 @@ def crossover(a, b):
 def mutate(children):
     for child in children:
         for i in range(len(child)):
-            if random() <= 1.0/len(child):
-                child[i] += gauss(0, 1)
+            if random() <= 0.1:
+                child[i] += gauss(0, 0.2)
 
 def merge(parents, children):
     both = parents + children
