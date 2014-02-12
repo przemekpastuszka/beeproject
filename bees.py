@@ -62,11 +62,13 @@ class NeuralBee(Bee):
                                self.visibility_radius + 1):
             for column_shift in xrange(-self.visibility_radius,
                                       self.visibility_radius + 1):
+                if not row_shift and not column_shift:
+                    continue
+                
                 x = self.position[0] + row_shift
                 y = self.position[1] + column_shift
+                
                 bee = self._find_bee_for_coords(all_bees, x, y)
-                if bee == self:
-                    continue
                 if bee is None:
                     visible_objects.append(meadow.meadow_objects[x][y])
                 else:
