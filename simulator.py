@@ -33,7 +33,7 @@ def create_brain(network_params, fitness, evaluations):
         network._setParameters(args)
         return network
     
-    best_params = genetic(lambda x: fitness.__call__(get_network_with(x)), len(network.params))
+    best_params = genetic(lambda x: fitness(get_network_with(x)), len(network.params))
     return get_network_with(best_params)
 
 
